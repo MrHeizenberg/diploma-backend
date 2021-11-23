@@ -19,11 +19,21 @@ const getAuthUser = (req, res, next) => {
 
 const updateUser = (req, res, next) => {
   const { name, email } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+  User.findOne({ email })
     .then((user) => {
       if (user) {
-        res.status(200).send(user);
+        return next(new ConflictError('Пользователь с таким email уже существует'));
       }
+      return User.findByIdAndUpdate(
+        req.user._id,
+        { name, email },
+        { new: true, runValidators: true },
+      )
+        .then((newuser) => {
+          if (newuser) {
+            res.status(200).send(newuser);
+          }
+        });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
