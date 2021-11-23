@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const router = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
 const app = express();
-mongoose.connect(process.env.MONGO_URL, {
+mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
 });
 app.use(express.json());
