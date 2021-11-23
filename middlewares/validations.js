@@ -6,7 +6,7 @@ const method = (value) => {
   if (result) {
     return value;
   }
-  return new Error('URL validation err');
+  throw new Error('URL validation err');
 };
 
 const validateUserBody = celebrate({
