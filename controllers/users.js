@@ -11,7 +11,7 @@ const getAuthUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user) {
-        res.status(200).send(user);
+        res.send(user);
       }
     })
     .catch(next);
@@ -31,7 +31,7 @@ const updateUser = (req, res, next) => {
       )
         .then((newuser) => {
           if (newuser) {
-            res.status(200).send(newuser);
+            res.send(newuser);
           }
         });
     })
@@ -47,22 +47,19 @@ const createUser = (req, res, next) => {
   const {
     email, password, name,
   } = req.body;
-  User.findOne({ email })
-    .then((user) => {
-      if (user) {
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      email,
+      password: hash,
+      name,
+    })
+      .then(() => {
+        res.send({ message: 'Пользователь создан' });
+      }))
+    .catch((err) => {
+      if (err.code === 11000) {
         return next(new ConflictError('Пользователь с таким email уже существует'));
       }
-      return bcrypt.hash(password, 10)
-        .then((hash) => User.create({
-          email,
-          password: hash,
-          name,
-        })
-          .then(() => {
-            res.status(200).send({ message: 'Пользователь создан' });
-          }));
-    })
-    .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new CastError('Переданы некорректные данные при создании пользователя'));
       }

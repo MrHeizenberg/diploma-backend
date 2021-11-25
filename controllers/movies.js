@@ -7,7 +7,7 @@ const savedMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
     .then((movies) => {
       if (movies) {
-        res.status(200).send(movies);
+        res.send(movies);
       }
     })
     .catch((err) => {
@@ -35,7 +35,7 @@ const addMovie = (req, res, next) => {
     owner: req.user._id,
   })
     .then((movie) => {
-      res.status(200).send(movie);
+      res.send(movie);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -50,13 +50,10 @@ const deleteMovie = (req, res, next) => {
   Movie.findById(movieId)
     .then((movie) => {
       if (movie) {
-        return Movie.findOneAndDelete({ owner: req.user, _id: movieId })
-          .then((movieOwner) => {
-            if (movieOwner) {
-              return res.status(200).send({ message: 'Удалено' });
-            }
-            return next(new ForbiddenError('Вы не можете удалять чужие фильмы'));
-          });
+        if (movie.owner.toString() === req.user._id) {
+          return movie.remove().then(() => res.send({ message: 'Удалено' }));
+        }
+        return next(new ForbiddenError('Вы не можете удалять чужие фильмы'));
       }
       return next(new NotFoundError('Нет фильма по заданному id'));
     })
