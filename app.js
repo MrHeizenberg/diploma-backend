@@ -13,8 +13,8 @@ const allowedCors = [
   'https://praktikum.tk',
   'http://praktikum.tk',
   'http://localhost:3000',
-  'http://diploma-avdeev.nomoredomains.work',
-  'https://diploma-avdeev.nomoredomains.work',
+  'http://diploma-avdeev.nomoredomains.rocks',
+  'https://diploma-avdeev.nomoredomains.rocks',
 ];
 const app = express();
 mongoose.connect(MONGO_URL, {
